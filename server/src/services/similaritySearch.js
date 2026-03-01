@@ -12,5 +12,6 @@ export const similaritySearch = async (searchQuery) => {
   });
 
   const docs = await vectorStorage.similaritySearch(searchQuery , 3);
+  console.log(docs)
   return docs.map((doc) => doc.pageContent).join("\n\n");
 };
