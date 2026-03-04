@@ -8,29 +8,38 @@ export const nomicEmbeddings = new NomicEmbeddings({
 
 const index = pinecone.index("rag-datasets");
 
-export async function storeChunkInPinecone(chunks) {
+export async function storeChunkInPinecone(chunks, organizationId) {
   try {
-    const index = pinecone.Index("rag-datasets");
+    if (!chunks?.length) return;
+
     const vectors = [];
 
     for (let i = 0; i < chunks.length; i++) {
-      const chunk = chunks[i];
+        const chunk = chunks[i];
 
-      const embedding = await nomicEmbeddings.embedQuery(chunk);
+        const embedding = await nomicEmbeddings.embedQuery(chunk);
+        
+        const uniqueId = `rag-datasets-${Date.now()}-${Math.random().toString(36).substring(7)}-${i}`;
 
-      vectors.push({
-        id: `rag-datasets-${i}`,
-        values: embedding,
-        metadata: {
-          text: chunk,
-          chunkIndex: i,
-        },
-      });
+        vectors.push({
+            id: uniqueId,
+            values: embedding,
+            metadata: {
+                text: chunk,
+                chunkIndex: i,
+            },
+         });
     }
 
-    await index.upsert(vectors);
-    console.log("Stored vectors using Nomic embeddings");
+    // #6 — Standardized namespace handling
+    if (organizationId) {
+       await index.namespace(organizationId).upsert(vectors);
+    } else {
+       await index.upsert(vectors);
+    }
+    
   } catch (error) {
-    console.error("Upload error:", error);
+    console.error("Store vectors error:", error);
+    throw error;
   }
 }

@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
+import prisma from '../config/dataBase.js';
 
-export const authMiddleware = (req, res, next) => {
+export const authMiddleware = async (req, res, next) => {
     try{
 
         const token = req.headers.authorization?.split(" ")[1]; // Bearer <token>
@@ -9,7 +10,20 @@ export const authMiddleware = (req, res, next) => {
         }
 
         const decoded = jwt.verify(token , process.env.JWT_SECRET);
-        req.user = decoded;
+        const user = await prisma.user.findUnique({
+          where: { id: decoded.id },
+          select: {
+            id: true,
+            role: true,
+            organizationId: true,
+          },
+        });
+
+        if (!user) {
+          return res.status(401).json({ message: "Invalid token user" });
+        }
+
+        req.user = user;
         next();
 
     }catch(err){

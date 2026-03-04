@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
-import {  getAvatar } from "../utils/getAvtar.js";
+import { getAvatar } from "../utils/getAvtar.js";
 import prisma from "../config/dataBase.js";
 import { comparePassword, hashPassword } from "../utils/hashedPassword.js";
 
@@ -8,9 +8,9 @@ import { comparePassword, hashPassword } from "../utils/hashedPassword.js";
 export const register = async (req, res) => {
 
   const errors = validationResult(req);
-  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+  if (!errors.isEmpty()) return res.status(400).json({ success: false, errors: errors.array() });
 
-  const { email, password , username} = req.body;
+  const { email, password, username, organizationId } = req.body;
 
   try {
 
@@ -18,33 +18,40 @@ export const register = async (req, res) => {
       where: { email }
     });
 
-    if (existingUser) return res.status(400).json({ message: "User already exists" });
-    const avatarUrl = await getAvatar();
+    if (existingUser) return res.status(400).json({ success: false, message: "User already exists" });
+    const avatarUrl = getAvatar();
 
     const hashedPassword = await hashPassword(password);
 
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        username,
-        avatarUrl: avatarUrl.url
-      }
-    });
+    // #1 — Accept optional organizationId; verify it exists if provided
+    const userData = {
+      email,
+      password: hashedPassword,
+      username,
+      avatarUrl: avatarUrl.url,
+    };
 
-    const token = jwt.sign({ id: user.id , role : user.role }, process.env.JWT_SECRET , { expiresIn: process.env.JWT_EXPIRE });
+    if (organizationId) {
+      const org = await prisma.organization.findUnique({ where: { id: organizationId } });
+      if (!org) return res.status(400).json({ success: false, message: "Organization not found" });
+      userData.organizationId = organizationId;
+    }
 
-    res.status(201).json({ message: "User registered successfully", user: { email, role: user.role }, token });
+    const user = await prisma.user.create({ data: userData });
+
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
+
+    res.status(201).json({ success: true, message: "User registered successfully", user: { email, role: user.role }, token });
     
   } catch (error) {
-    res.status(500).json({ success : false , message: "Server error", error: error.message });
+    res.status(500).json({ success: false, message: "Server error", error: error.message });
   }
 };
 
 export const login = async (req, res) => {
 
   const errors = validationResult(req);
-  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+  if (!errors.isEmpty()) return res.status(400).json({ success: false, errors: errors.array() });
 
   const { email, password } = req.body;
 
@@ -54,25 +61,16 @@ export const login = async (req, res) => {
       where: { email }
     });
 
-    if (!user) return res.status(401).json({ message: "Invalid credentials" });
+    if (!user) return res.status(401).json({ success: false, message: "Invalid credentials" });
 
-    const isMatch = await comparePassword(password , user.password);
-    if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
+    const isMatch = await comparePassword(password, user.password);
+    if (!isMatch) return res.status(401).json({ success: false, message: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user.id , role : user.role }, process.env.JWT_SECRET , { expiresIn: process.env.JWT_EXPIRE });
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
 
-    res.json({ success : true , message : "Succesfully login user" , token , user : {email : user.email , role : user.role} });
+    res.json({ success: true, message: "Successfully logged in", token, user: { email: user.email, role: user.role } });
     
   } catch (error) {
-    res.status(500).json({success : false , message: "Server error", error: error.message });
+    res.status(500).json({ success: false, message: "Server error", error: error.message });
   }
 };
-
-export const adminProtectedRoute = (req, res) => {
-  res.json({ message: "Welcome to the admin dashboard" , user :  req.user });
-}
-
-export const userProtectedRoute = (req, res) => {
-  res.json({ message: "Welcome to the admin dashboard" , user :  req.user });
-}
-

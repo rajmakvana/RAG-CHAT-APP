@@ -8,14 +8,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum OrgType {
+  SCHOOL
+  UNIVERSITY
+  COMPANY
+  HOSPITAL
+  GOVERNMENT
+  OTHER
+}
+
+model Organization {
+  id           String       @id @default(uuid())
+  name         String
+  type         OrgType      @default(OTHER)
+  description  String?      // what the org does
+  context      String?      // key info injected into RAG prompts
+  systemPrompt String?      // custom AI system prompt per org
+  website      String?
+  logoUrl      String?
+  createdAt    DateTime     @default(now())
+  users        User[]
+  datasets     Dataset[]
+  threads      Thread[]
+  invitations  Invitation[]
+}
+
 model User {
-  id        String   @id @default(uuid())
-  username  String
-  email     String   @unique
-  password  String
-  avatarUrl String?  @default("https://avatar.iran.liara.run/public/11")
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
+  id             String        @id @default(uuid())
+  username       String
+  email          String        @unique
+  password       String
+  avatarUrl      String?       @default("https://avatar.iran.liara.run/public/11")
+  role           Role          @default(USER)
+  createdAt      DateTime      @default(now())
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
 }
 
 enum Role {
@@ -23,16 +50,27 @@ enum Role {
   USER
 }
 
-model Dataset {
-  id           String   @id @default(uuid())
-  filename     String
-  url          String
-  publicId     String
-  uploadedById String? // FK to User.id (optional)
-  createdAt    DateTime @default(now())
+model Invitation {
+  id             String       @id @default(uuid())
+  email          String
+  token          String       @unique
+  role           Role         @default(USER)
+  accepted       Boolean      @default(false)
+  expiresAt      DateTime
+  createdAt      DateTime     @default(now())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
 
-  // optional relation if you have User model:
-  // uploadedBy   User?  @relation(fields: [uploadedById], references: [id])
+model Dataset {
+  id             String        @id @default(uuid())
+  filename       String
+  url            String
+  publicId       String
+  uploadedById   String?
+  createdAt      DateTime      @default(now())
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
 }
 
 enum MessageRole {
@@ -41,20 +79,21 @@ enum MessageRole {
 }
 
 model Thread {
-  id        String    @unique
-  title     String
-  messages  Message[]
-  userId    String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id             String        @id
+  title          String
+  messages       Message[]
+  userId         String
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
 }
 
 model Message {
-  id        String       @id @default(uuid())
+  id        String      @id @default(uuid())
   role      MessageRole
   content   String
-  createdAt DateTime     @default(now())
+  createdAt DateTime    @default(now())
   threadId  String
-  thread    Thread       @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  thread    Thread      @relation(fields: [threadId], references: [id], onDelete: Cascade)
 }
-
