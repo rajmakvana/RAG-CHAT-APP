@@ -73,8 +73,11 @@ export const registerOrganization = async (req, res) => {
         type: result.organization.type,
       },
       user: {
+        id: result.admin.id,
         email: result.admin.email,
+        username: result.admin.username,
         role: result.admin.role,
+        organizationId: result.admin.organizationId,
       },
       token,
     });
@@ -301,7 +304,13 @@ export const acceptInvite = async (req, res) => {
       success: true,
       message: "Account created and joined organization successfully",
       token: loginToken,
-      user: { email: result.email, role: result.role },
+      user: {
+        id: result.id,
+        email: result.email,
+        username: result.username,
+        role: result.role,
+        organizationId: result.organizationId,
+      },
     });
   } catch (error) {
     console.error("Accept invite error:", error);
@@ -330,8 +339,15 @@ export const getOrganization = async (req, res) => {
             avatarUrl: true,
           },
         },
+        datasets: {
+          select: {
+            id: true,
+            filename: true,
+            createdAt: true,
+          }
+        },
         _count: {
-          select: { datasets: true, threads: true },
+          select: { threads: true },
         },
       },
     });
@@ -344,5 +360,59 @@ export const getOrganization = async (req, res) => {
   } catch (error) {
     console.error("Get org error:", error);
     res.status(500).json({ success: false, message: "Failed to get organization" });
+  }
+};
+
+// Remove a user from the organization (ADMIN only)
+export const removeMember = async (req, res) => {
+  try {
+    const orgId = req.user.organizationId;
+    const { userId } = req.params;
+
+    if (!orgId) {
+      return res.status(400).json({ success: false, message: "You do not belong to any organization" });
+    }
+
+    // Check if user to be removed exists and belongs to the same org
+    const userToRemove = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!userToRemove || userToRemove.organizationId !== orgId) {
+      return res.status(404).json({ success: false, message: "User not found in your organization" });
+    }
+
+    // Prevent removing oneself
+    if (userId === req.user.id) {
+      return res.status(400).json({ success: false, message: "You cannot remove yourself from the organization" });
+    }
+
+    // If removing an admin, check if there's at least one other admin
+    if (userToRemove.role === "ADMIN") {
+      const adminCount = await prisma.user.count({
+        where: {
+          organizationId: orgId,
+          role: "ADMIN",
+        },
+      });
+
+      if (adminCount <= 1) {
+        return res.status(400).json({ success: false, message: "Cannot remove the last administrator of the organization" });
+      }
+    }
+
+    // Remove user from organization by setting organizationId to null and role to USER (or deleting them if that's preferred)
+    // The user request says "delete the user"
+    await prisma.user.delete({
+      where: { id: userId },
+    });
+
+    res.json({
+      success: true,
+      message: "User removed and deleted successfully",
+    });
+  } catch (error) {
+    console.error("Remove member error:", error);
+    res.status(500).json({ success: false, message: "Failed to remove member" });
   }
 };

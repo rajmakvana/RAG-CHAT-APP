@@ -1,21 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Lock, 
-  Zap, 
-  Shield, 
-  Users, 
-  FileText, 
-  CheckCircle, 
-  ArrowRight, 
-  Building2, 
-  GraduationCap, 
+import {
+  Lock,
+  Zap,
+  Shield,
+  Users,
+  FileText,
+  CheckCircle,
+  ArrowRight,
+  Building2,
+  GraduationCap,
   MessageSquare,
   Database,
   Search,
   Sparkles,
   ChevronRight
 } from 'lucide-react';
-import { NavLink } from 'react-router';
+import { NavLink, Link } from 'react-router';
 
 const LandingPage = () => {
   const [activeFeature, setActiveFeature] = useState(0);
@@ -26,8 +26,8 @@ const LandingPage = () => {
   const useCasesRef = useRef();
   const heroRef = useRef();
 
-   const handleScroll = (ref) => {
-     ref.current.scrollIntoView({ behavior: "smooth" });
+  const handleScroll = (ref) => {
+    ref.current.scrollIntoView({ behavior: "smooth" });
   }
 
   useEffect(() => {
@@ -228,14 +228,15 @@ const LandingPage = () => {
             <span className="font-display text-2xl font-bold text-slate-900">Chatbot</span>
           </div>
           <div className="hidden md:flex items-center space-x-8">
-            <NavLink onClick={() => handleScroll(featureRef)} className={(isActive) => isActive ? "text-slate-900" : "text-slate-600 hover:text-slate-900 transition-colors" } >Features </NavLink>
+            <NavLink onClick={() => handleScroll(featureRef)} className={(isActive) => isActive ? "text-slate-900" : "text-slate-600 hover:text-slate-900 transition-colors"} >Features </NavLink>
 
-            <NavLink onClick={() => handleScroll(howItWorkRef)}   className={(isActive) => isActive ? "text-slate-900" : "text-slate-600 hover:text-slate-900 transition-colors" } >How It Works </NavLink>
+            <NavLink onClick={() => handleScroll(howItWorkRef)} className={(isActive) => isActive ? "text-slate-900" : "text-slate-600 hover:text-slate-900 transition-colors"} >How It Works </NavLink>
 
-            <NavLink onClick={() => handleScroll(useCasesRef)}  className={(isActive) => isActive ? "text-slate-900" : "text-slate-600 hover:text-slate-900 transition-colors" } >Use Cases </NavLink>
-            <button className="px-5 py-2.5 bg-gradient-to-br from-blue-600 to-cyan-500 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
-              Get Started
-            </button>
+            <NavLink onClick={() => handleScroll(useCasesRef)} className={(isActive) => isActive ? "text-slate-900" : "text-slate-600 hover:text-slate-900 transition-colors"} >Use Cases </NavLink>
+            <Link to="/login" className="text-slate-600 hover:text-slate-900 transition-colors font-medium">Log in</Link>
+            <Link to="/register-org" className="px-5 py-2.5 bg-gradient-to-br from-blue-600 to-cyan-500 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+              Start Free Trial
+            </Link>
           </div>
         </div>
       </nav>
@@ -244,34 +245,34 @@ const LandingPage = () => {
       <section className="relative overflow-hidden" ref={heroRef}>
         <div className="blob-left blob w-96 h-96 bg-blue-500 top-20 -left-48"></div>
         <div className="blob-right blob w-96 h-96 bg-cyan-400 top-40 -right-48"></div>
-        
+
         <div className="max-w-7xl mx-auto px-6 py-20 md:py-25 relative">
           <div className={`text-center max-w-4xl mx-auto ${isVisible ? 'slide-up' : 'opacity-0'}`}>
             <div className="inline-flex items-center space-x-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full mb-8 font-medium text-sm">
               <Sparkles className="w-4 h-4" />
               <span>Intelligent Knowledge Management</span>
             </div>
-            
+
             <h1 className="font-display text-5xl md:text-7xl font-bold text-slate-900 mb-6 leading-tight">
               Your Organization.<br />
               <span className="gradient-text">Your AI Assistant.</span>
             </h1>
-            
+
             <p className="text-xl md:text-2xl text-slate-600 mb-10 leading-relaxed max-w-3xl mx-auto">
-              Transform your organization's documents into an intelligent knowledge base. 
+              Transform your organization's documents into an intelligent knowledge base.
               Get instant, accurate answers from your own data—not the entire internet.
             </p>
-            
+
             <div className={`flex flex-col sm:flex-row items-center justify-center gap-4 ${isVisible ? 'slide-up-delay-1' : ''}`}>
-              <button className="px-8 py-3 bg-gradient-to-br from-blue-600 to-cyan-500 text-white rounded-xl hover:bg-blue-700 transition-all font-semibold text-lg flex items-center space-x-2 shadow-lg hover:shadow-xl">
+              <Link to="/register-org" className="px-8 py-3 bg-gradient-to-br from-blue-600 to-cyan-500 text-white rounded-xl hover:bg-blue-700 transition-all font-semibold text-lg flex items-center space-x-2 shadow-lg hover:shadow-xl">
                 <span>Start Free Trial</span>
                 <ArrowRight className="w-5 h-5" />
-              </button>
-              <button className="px-8 py-3 bg-white text-slate-700 rounded-xl hover:bg-slate-50 transition-all font-semibold text-lg border-2 border-slate-200">
-                Watch Demo
-              </button>
+              </Link>
+              <Link to="/login" className="px-8 py-3 bg-white text-slate-700 rounded-xl hover:bg-slate-50 transition-all font-semibold text-lg border-2 border-slate-200">
+                Sign In to Workspace
+              </Link>
             </div>
-            
+
             <div className={`mt-12 flex items-center justify-center space-x-8 text-sm text-slate-500 ${isVisible ? 'slide-up-delay-2' : ''}`}>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="w-5 h-5 text-green-600" />
@@ -296,12 +297,12 @@ const LandingPage = () => {
                 You're Not Alone.
               </h2>
               <p className="text-slate-300 text-lg leading-relaxed">
-                Most organizations store valuable knowledge in scattered documents, wikis, and drives. 
-                Finding the right information wastes hours every week. Generic AI tools can't help because 
+                Most organizations store valuable knowledge in scattered documents, wikis, and drives.
+                Finding the right information wastes hours every week. Generic AI tools can't help because
                 they don't have access to your specific data.
               </p>
             </div>
-            
+
             <div className="space-y-4">
               {[
                 "Teams repeatedly ask the same questions",
@@ -323,7 +324,7 @@ const LandingPage = () => {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" ref={howItWorkRef}  className="py-24 bg-white">
+      <section id="how-it-works" ref={howItWorkRef} className="py-24 bg-white">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="font-display text-4xl md:text-5xl font-bold text-slate-900 mb-4">
@@ -333,7 +334,7 @@ const LandingPage = () => {
               Three steps to unlock your organization's knowledge
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             {steps.map((step, idx) => (
               <div key={idx} className="relative">
@@ -370,19 +371,18 @@ const LandingPage = () => {
               Built for modern teams who value security and accuracy
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 gap-6">
             {features.map((feature, idx) => (
-              <div 
+              <div
                 key={idx}
                 className="bg-white rounded-2xl p-8 border-2 border-slate-200 card-hover cursor-pointer"
                 onMouseEnter={() => setActiveFeature(idx)}
               >
-                <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 transition-all ${
-                  activeFeature === idx 
-                    ? 'bg-blue-600 text-white' 
+                <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 transition-all ${activeFeature === idx
+                    ? 'bg-blue-600 text-white'
                     : 'bg-blue-100 text-blue-600'
-                }`}>
+                  }`}>
                   {feature.icon}
                 </div>
                 <h3 className="font-display text-2xl font-bold text-slate-900 mb-3">
@@ -406,17 +406,17 @@ const LandingPage = () => {
                 <Shield className="w-4 h-4" />
                 <span>Enterprise-Grade Security</span>
               </div>
-              
+
               <h2 className="font-display text-4xl md:text-5xl font-bold mb-6">
                 Your Data Stays Yours
               </h2>
-              
+
               <p className="text-slate-300 text-lg mb-8 leading-relaxed">
-                Built from the ground up with multi-tenant architecture. Each organization operates 
-                in complete isolation—your data is never shared, never mixed, and never exposed to 
+                Built from the ground up with multi-tenant architecture. Each organization operates
+                in complete isolation—your data is never shared, never mixed, and never exposed to
                 other users.
               </p>
-              
+
               <div className="space-y-4">
                 {[
                   "Complete data isolation between organizations",
@@ -434,7 +434,7 @@ const LandingPage = () => {
                 ))}
               </div>
             </div>
-            
+
             <div className="relative">
               <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700">
                 <div className="space-y-4">
@@ -445,7 +445,7 @@ const LandingPage = () => {
                       <div className="text-sm text-slate-400">1,247 documents • 12 users</div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-3 p-4 bg-green-900/30 rounded-lg border border-green-700/50">
                     <Lock className="w-6 h-6 text-green-400" />
                     <div>
@@ -453,7 +453,7 @@ const LandingPage = () => {
                       <div className="text-sm text-slate-400">892 documents • 8 users</div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-3 p-4 bg-purple-900/30 rounded-lg border border-purple-700/50">
                     <Lock className="w-6 h-6 text-purple-400" />
                     <div>
@@ -461,7 +461,7 @@ const LandingPage = () => {
                       <div className="text-sm text-slate-400">2,103 documents • 25 users</div>
                     </div>
                   </div>
-                  
+
                   <div className="text-center pt-4 text-slate-400 text-sm">
                     ↑ Completely isolated data environments
                   </div>
@@ -483,7 +483,7 @@ const LandingPage = () => {
               From startups to institutions, unlock your knowledge
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             {useCases.map((useCase, idx) => (
               <div key={idx} className="bg-slate-50 rounded-2xl p-8 border-2 border-slate-200 card-hover">
@@ -514,7 +514,7 @@ const LandingPage = () => {
           <h2 className="font-display text-4xl md:text-5xl font-bold text-center mb-16">
             Why Not Just Use ChatGPT?
           </h2>
-          
+
           <div className="grid md:grid-cols-2 gap-8">
             <div className="bg-red-900/20 border-2 border-red-700/50 rounded-2xl p-8">
               <div className="text-red-400 font-semibold mb-3 flex items-center space-x-2">
@@ -544,7 +544,7 @@ const LandingPage = () => {
                 </li>
               </ul>
             </div>
-            
+
             <div className="bg-green-900/20 border-2 border-green-700/50 rounded-2xl p-8">
               <div className="text-green-400 font-semibold mb-3 flex items-center space-x-2">
                 <Sparkles className="w-5 h-5" />
@@ -574,7 +574,7 @@ const LandingPage = () => {
               </ul>
             </div>
           </div>
-          
+
           <div className="mt-12 bg-blue-900/30 border-2 border-blue-700/50 rounded-2xl p-8 text-center">
             <p className="text-xl text-slate-200 leading-relaxed">
               <span className="font-bold text-white">Generic AI = Internet knowledge.</span>
@@ -597,11 +597,11 @@ const LandingPage = () => {
               Powered by Advanced AI
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              We leverage cutting-edge retrieval technology to ensure you get accurate, 
+              We leverage cutting-edge retrieval technology to ensure you get accurate,
               relevant answers every time
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {techPoints.map((point, idx) => (
               <div key={idx} className="bg-white rounded-xl p-6 border-2 border-slate-200 flex items-start space-x-3">
@@ -612,10 +612,10 @@ const LandingPage = () => {
               </div>
             ))}
           </div>
-          
+
           <div className="mt-12 text-center">
             <p className="text-slate-500 text-sm max-w-2xl mx-auto">
-              Built with MongoDB, Express, React, and Node.js for reliability and performance. 
+              Built with MongoDB, Express, React, and Node.js for reliability and performance.
               Deployed on secure cloud infrastructure with automatic scaling and 99.9% uptime.
             </p>
           </div>
@@ -629,20 +629,20 @@ const LandingPage = () => {
             Ready to Transform Your Knowledge?
           </h2>
           <p className="text-xl md:text-2xl mb-10 text-blue-100 leading-relaxed">
-            Join teams who've already unlocked their organization's intelligence. 
+            Join teams who've already unlocked their organization's intelligence.
             Get started in minutes, no technical expertise required.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
-            <button className="px-10 py-5 bg-white text-blue-600 rounded-xl hover:bg-slate-50 transition-all font-bold text-lg shadow-2xl hover:shadow-3xl flex items-center space-x-2">
+            <Link to="/register-org" className="px-10 py-5 bg-white text-blue-600 rounded-xl hover:bg-slate-50 transition-all font-bold text-lg shadow-2xl hover:shadow-3xl flex items-center space-x-2">
               <span>Start Your Free Trial</span>
               <ArrowRight className="w-6 h-6" />
-            </button>
-            <button className="px-10 py-5 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition-all font-bold text-lg border-2 border-blue-400">
-              Schedule a Demo
-            </button>
+            </Link>
+            <Link to="/login" className="px-10 py-5 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition-all font-bold text-lg border-2 border-blue-400 text-center">
+              Login to Workspace
+            </Link>
           </div>
-          
+
           <div className="flex items-center justify-center space-x-8 text-blue-100">
             <div className="flex items-center space-x-2">
               <CheckCircle className="w-5 h-5" />
@@ -675,7 +675,7 @@ const LandingPage = () => {
                 Secure, intelligent knowledge management for modern organizations.
               </p>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-white mb-3">Product</h4>
               <ul className="space-y-2 text-sm">
@@ -685,7 +685,7 @@ const LandingPage = () => {
                 <li><a href="#" className="hover:text-white transition-colors">API Reference</a></li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-white mb-3">Company</h4>
               <ul className="space-y-2 text-sm">
@@ -695,7 +695,7 @@ const LandingPage = () => {
                 <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-white mb-3">Legal</h4>
               <ul className="space-y-2 text-sm">
@@ -706,7 +706,7 @@ const LandingPage = () => {
               </ul>
             </div>
           </div>
-          
+
           <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row items-center justify-between text-sm">
             <p>© 2024 KnowledgeRAG. All rights reserved.</p>
             <div className="flex items-center space-x-6 mt-4 md:mt-0">

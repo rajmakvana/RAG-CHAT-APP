@@ -6,6 +6,7 @@ import {
   inviteUser,
   acceptInvite,
   getOrganization,
+  removeMember,
 } from "../controller/organization.controller.js";
 import { orgRegisterValidation, acceptInviteValidation } from "../utils/express-validation.js";
 
@@ -25,5 +26,8 @@ router.post("/invite", authMiddleware, roleMiddleware(["ADMIN"]), inviteUser);
 
 // Protected: Get current org details
 router.get("/", authMiddleware, roleMiddleware(["USER", "ADMIN"]), getOrganization);
+
+// Protected: Remove a member from the organization
+router.delete("/member/:userId", authMiddleware, roleMiddleware(["ADMIN"]), removeMember);
 
 export default router;
