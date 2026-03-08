@@ -44,7 +44,7 @@ app.use(generalLimiter);
 // all api routes
 app.use("/api/v1/user", authLimiter, userAuthRouter);
 app.use("/api/v1/protected", protectedRouter);
-app.use("/api/v1/user/chat", chatRouter);
+app.use("/api/v1/chat", chatRouter);
 app.use("/api/v1/org", organizationRouter);
 
 // #10 — Global error handler
